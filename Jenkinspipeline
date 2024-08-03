@@ -14,6 +14,7 @@ pipeline {
         }
         stage("docker build") {
             steps {
+                sh "sudo usermod -aG docker ubuntu"
                 sh "docker build -t gpavankumarreddy/ekartapp:latest ."
             }
         }
@@ -22,6 +23,17 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'DOCKERHUB', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
                     sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD"
                     sh "docker push gpavankumarreddy/ekartapp:latest"
+                }
+            }
+        }
+        stage("k8s setup") {
+            steps {
+                withKubeCredentials(kubectlCredentials: [
+                    [caCertificate: '', clusterName: 'sample', contextName: '', credentialsId: 'kubernetes', namespace: 'default', serverUrl: 'https://172.31.11.36:6443']
+                ]) {
+                    sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
+                    sh 'chmod u+x ./kubectl'  
+                    sh './kubectl get nodes'
                 }
             }
         }
