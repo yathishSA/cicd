@@ -1,0 +1,48 @@
+pipeline {
+    agent any 
+
+    stages {
+        stage("git checkout") {
+            steps {
+                git branch: 'main', url: 'https://github.com/babupavan/Ekart.git'
+            }
+        }
+        stage("maven install") {
+            steps {
+                sh 'mvn clean package -DskipTests=true'
+            }
+        }
+        stage("docker build") {
+            steps {
+                sh "docker build -t gpavankumarreddy/ekartapp:latest ."
+            }
+        }
+        stage("docker login and push") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DOCKERHUB1', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    sh '''
+                    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+                    docker push gpavankumarreddy/ekartapp:latest
+                    docker run -d -p 30910:30910 --name ekart gpavankumarreddy/ekartapp:latest
+                    '''
+                }
+            }
+        }
+        stage("k8s setup") {
+            steps {
+                withKubeCredentials(kubectlCredentials: [
+                    [caCertificate: '', clusterName: 'sample', contextName: '', credentialsId: 'kubernetes', namespace: 'default', serverUrl: 'https://172.31.11.36:6443']
+                ]) {
+                    sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
+                    sh 'chmod u+x ./kubectl'  
+                    sh './kubectl get nodes'
+                    sh './kubectl get pods'
+                    sh './kubectl get namespaces'
+                    sh './kubectl apply -f deploymentservice.yml'
+                    sh './kubectl get pods'
+                    sh './kubectl get svc'
+                }
+            }
+        }
+    }
+}
