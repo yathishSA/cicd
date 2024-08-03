@@ -14,7 +14,6 @@ pipeline {
         }
         stage("docker build") {
             steps {
-                sh "sudo usermod -aG docker ubuntu"
                 sh "docker build -t gpavankumarreddy/ekartapp:latest ."
             }
         }
@@ -36,6 +35,7 @@ pipeline {
                     sh './kubectl get nodes'
                     sh './kubectl get pods'
                     sh './kubectl get namespaces'
+                    sh './kubectl apply -f deploymentservice.yml'
                 }
             }
         }
