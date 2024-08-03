@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage("git checkout") {
             steps {
-                git 'https://github.com/babupavan/Ekart.git'
+                git branch: 'main', url: 'https://github.com/babupavan/Ekart.git'
             }
         }
         stage("maven install") {
