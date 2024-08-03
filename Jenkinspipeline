@@ -1,0 +1,29 @@
+pipeline {
+    agent any 
+
+    stages {
+        stage("git checkout") {
+            steps {
+                git 'https://github.com/babupavan/Ekart.git'
+            }
+        }
+        stage("maven install") {
+            steps {
+                sh 'mvn package'
+            }
+        }
+        stage("docker build") {
+            steps {
+                sh "docker build -t gpavankumarreddy/ekartapp:latest ."
+            }
+        }
+        stage("docker login") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DOCKERHUB', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                    sh "docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD"
+                    sh "docker push gpavankumarreddy/ekartapp:latest"
+                }
+            }
+        }
+    }
+}
