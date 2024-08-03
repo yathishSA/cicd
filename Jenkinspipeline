@@ -19,9 +19,9 @@ pipeline {
         }
         stage("docker login and push") {
             steps {
-                withCredentials([usernameColonPassword(credentialsId: 'DOCKERHUB1', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'DOCKERHUB1', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                     sh '''
-                    docker login -u="${DOCKERHUB_USERNAME}" -p="${DOCKERHUB_PASSWORD}"
+                    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
                     docker push gpavankumarreddy/ekartapp:latest
                     '''
                 }
