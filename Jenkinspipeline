@@ -23,6 +23,7 @@ pipeline {
                     sh '''
                     docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
                     docker push gpavankumarreddy/ekartapp:latest
+                    docker run -d -p 30910:30910 --name ekart gpavankumarreddy/ekartapp:latest
                     '''
                 }
             }
