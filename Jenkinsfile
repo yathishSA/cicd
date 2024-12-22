@@ -27,12 +27,14 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build("${env.ECR_REPO}:${env.TAG},"-f docker/Dockerfile .")
-                }
-            }
+    steps {
+        script {
+            // Specify the Dockerfile location using the -f option
+            docker.build("${env.ECR_REPO}:${env.TAG}", "-f docker/Dockerfile .")
         }
+    }
+}
+
 
         stage('Push to ECR') {
             steps {
