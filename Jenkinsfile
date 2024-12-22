@@ -59,7 +59,7 @@ pipeline {
         stage('Static Code Analysis - SonarQube') {
             steps {
                 script {
-                    withSonarQubeEnv('sonar') {
+                    withSonarQubeEnv('SonarQubeServer') {
                         sh 'mvn sonar:sonar'
                     }
                 }
