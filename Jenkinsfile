@@ -48,7 +48,7 @@ pipeline {
                         subject: "Jenkins Job - Docker Image Pushed to ECR Successfully",
                         body: "Hello,\n\nThe Docker image '${env.IMAGE_NAME}:${env.TAG}' has been successfully pushed to ECR.\n\nBest regards,\nJenkins",
                         recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                        to: "m.ehtasham.azhar@gmail.com"
+                        to: "jap4810@gmail.com"
                     )
                 }
             }
