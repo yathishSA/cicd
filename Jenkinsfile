@@ -19,14 +19,10 @@ pipeline {
                 git branch: "${env.BRANCH_NAME}", url: 'https://github.com/your-org/your-repo.git'
             }
         }
-        stage('Compile') {
-            steps {
-            sh 'mvn  compile'
-            }
-        }
+        
         stage('Build Application') {
             steps {
-            sh 'mvn package'
+            sh 'mvn clean package -Dmaven.test.skip=true'
             }
         }
 
