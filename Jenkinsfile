@@ -29,7 +29,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${env.ECR_REPO}:${env.TAG}")
+                    docker.build("${env.ECR_REPO}:${env.TAG},"-f docker/Dockerfile .")
                 }
             }
         }
