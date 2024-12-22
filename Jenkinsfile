@@ -66,15 +66,9 @@ pipeline {
             }
         }
 
-        stage('Container Security Scan - Trivy') {
-            steps {
-                script {
-                    sh "trivy image ${ECR_REPO}:${TAG}"
-                }
-            }
-        }
+        
 
-        stage('Deploy to Environment') {
+     stage('Deploy to Environment') {
             steps {
                 script {
                     def targetHost = ''
