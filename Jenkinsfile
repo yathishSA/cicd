@@ -1,6 +1,11 @@
 pipeline { 
     agent { label ' jenkins_slave' }
 
+    tools {
+        maven 'maven3'
+        
+    }
+
     environment {
         ECR_REPO = '866934333672.dkr.ecr.us-east-1.amazonaws.com/jay-repo'
         IMAGE_NAME = 'app-image'
@@ -12,6 +17,16 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: "${env.BRANCH_NAME}", url: 'https://github.com/your-org/your-repo.git'
+            }
+        }
+        stage('Compile') {
+            steps {
+            sh 'mvn  compile'
+            }
+        }
+        stage('Build Application') {
+            steps {
+            sh 'mvn package'
             }
         }
 
@@ -46,7 +61,7 @@ pipeline {
         stage('Static Code Analysis - SonarQube') {
             steps {
                 script {
-                    withSonarQubeEnv('SonarQubeServer') {
+                    withSonarQubeEnv('Sonar') {
                         sh 'mvn sonar:sonar'
                     }
                 }
