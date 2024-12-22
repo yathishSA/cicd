@@ -66,36 +66,39 @@ pipeline {
             }
         }
 
-        
+    stage('Deploy to Environment') {
+    steps {
+        script {
+            def targetHost = ''
+            if (env.BRANCH_NAME == 'dev') {
+                targetHost = '<DEV-EC2-IP>'
+            } else if (env.BRANCH_NAME == 'staging') {
+                targetHost = '<STAGING-EC2-IP>'
+            } else if (env.BRANCH_NAME == 'main') {
+                targetHost = '<PROD-EC2-IP>'
+            }
 
-     stage('Deploy to Environment') {
-            steps {
-                script {
-                    def targetHost = ''
-                    if (env.BRANCH_NAME == 'dev') {
-                        targetHost = '<DEV-EC2-IP>'
-                    } else if (env.BRANCH_NAME == 'staging') {
-                        targetHost = '<STAGING-EC2-IP>'
-                    } else if (env.BRANCH_NAME == 'main') {
-                        targetHost = '<PROD-EC2-IP>'
-                    }
-
-                    sh """
-                    ssh -i ${SSH_KEY} root@${targetHost} << EOF
-                    docker pull ${ECR_REPO}:${TAG}
-                    docker stop ${IMAGE_NAME} || true
-                    docker rm ${IMAGE_NAME} || true
-                    docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
-                    EOF
-                    """
-                }
+            // Use withCredentials to securely handle SSH Key
+            withCredentials([file(credentialsId: 'ec2-ssh-key', variable: 'SSH_KEY')]) {
+                sh """
+                chmod 600 ${SSH_KEY}
+                ssh -i ${SSH_KEY} root@${targetHost} << EOF
+                docker pull ${ECR_REPO}:${TAG}
+                docker stop ${IMAGE_NAME} || true
+                docker rm ${IMAGE_NAME} || true
+                docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
+                EOF
+                """
             }
         }
     }
+}
 
-    post {
-        always {
-            cleanWs()  // Clean up workspace after the build
-        }
+post {
+    always {
+        cleanWs()  // Clean up workspace after the build
     }
 }
+    
+
+    
