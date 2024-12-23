@@ -74,12 +74,12 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'staging') {
                         targetHost = '<STAGING-EC2-IP>'
                     } else if (env.BRANCH_NAME == 'main') {
-                        targetHost = '<PROD-EC2-IP>'
+                        targetHost = '<54.234.80.60>'
                     }
                     // Use withCredentials to securely handle the SSH key
             withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')]){
                     sh 'chmod 600 ${SSH_KEY_FILE}'
-                    sh 'ssh -i ${SSH_KEY_FILE} root@${targetHost} << EOF'
+                    sh 'ssh -t -i ${SSH_KEY_FILE} root@${targetHost} << EOF'
                     sh """#!/bin/bash
                     docker pull ${ECR_REPO}:${TAG}
                     docker stop ${IMAGE_NAME} || true
