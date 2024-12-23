@@ -74,7 +74,7 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'staging') {
                         targetHost = '<STAGING-EC2-IP>'
                     } else if (env.BRANCH_NAME == 'main') {
-                        targetHost = '<54.234.80.60>'
+                        targetHost = '54.234.80.60'
                     }
                     // Use withCredentials to securely handle the SSH key
             withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')]){
