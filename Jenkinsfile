@@ -78,7 +78,7 @@ pipeline {
                     }
 
                     sh """
-                    ssh -i ${env.SSH_KEY} ec2-user@${targetHost} << EOF
+                    ssh -i $[SSH_KEY] ec2-user@${targetHost} << EOF
                     docker pull ${ECR_REPO}:${TAG}
                     docker stop ${IMAGE_NAME} || true
                     docker rm ${IMAGE_NAME} || true
