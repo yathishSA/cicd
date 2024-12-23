@@ -83,10 +83,14 @@ pipeline {
                     sh 'ssh -tt -i $SSH_KEY_FILE ubuntu@54.234.80.60 << EOF'
                     sh ' echo "connection sussecfull" '
                     sh """#!/bin/bash
+                    echo "Pulling Docker image..."
                     docker pull ${ECR_REPO}:${TAG}
+                    echo "Stopping existing container..."
                     docker stop ${IMAGE_NAME} || true
                     docker rm ${IMAGE_NAME} || true
+                    echo "Running new container..."
                     docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
+                    echo "Deployment completed"
 EOF
                     """
             }
