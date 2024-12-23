@@ -85,7 +85,7 @@ pipeline {
                     docker stop ${IMAGE_NAME} || true
                     docker rm ${IMAGE_NAME} || true
                     docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
-                    EOF
+EOF
                     """
             }
                 }
