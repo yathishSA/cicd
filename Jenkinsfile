@@ -68,7 +68,7 @@ pipeline {
     stage('Deploy to Environment') {
             steps {
                 script {
-                    def targetHost = '192.168.1.10'
+                    def targetHost = 'ip-192-168-1-10.ec2.internal.'
                     if (env.BRANCH_NAME == 'dev') {
                         targetHost = '<DEV-EC2-IP>'
                     } else if (env.BRANCH_NAME == 'staging') {
