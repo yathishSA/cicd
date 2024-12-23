@@ -78,7 +78,7 @@ pipeline {
                     }
                 
                     // Use withCredentials to securely handle the SSH key
-            withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')]){
+            withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key1', keyFileVariable: 'SSH_KEY_FILE')]){
                     sh 'chmod 600 ${SSH_KEY_FILE}'
                     sh 'ssh -tt -i ${SSH_KEY_FILE} ubuntu@54.234.80.60 << EOF'
                     sh """#!/bin/bash
