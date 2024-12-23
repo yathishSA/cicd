@@ -10,7 +10,7 @@ pipeline {
         ECR_REPO = '866934333672.dkr.ecr.us-east-1.amazonaws.com/jay-repo'
         IMAGE_NAME = 'app-image'
         TAG = "${env.BRANCH_NAME}-${env.BUILD_ID}"
-        SSH_KEY = credentials('ec2-ssh-key')
+        
     }
 
     stages {
@@ -76,10 +76,11 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'main') {
                         targetHost = '<PROD-EC2-IP>'
                     }
-
+                    // Use withCredentials to securely handle the SSH key
+            withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')])
                     sh """
-                    chmod 600 ${SSH_KEY}
-                    ssh -i ${SSH_KEY} ec2-user@${targetHost} << EOF
+                    chmod 600 ${SSH_KEY_FILE}
+                    ssh -i ${SSH_KEY_FILE} ec2-user@${targetHost} << EOF
                     docker pull ${ECR_REPO}:${TAG}
                     docker stop ${IMAGE_NAME} || true
                     docker rm ${IMAGE_NAME} || true
