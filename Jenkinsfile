@@ -68,7 +68,7 @@ pipeline {
     stage('Deploy to Environment') {
             steps {
                 script {
-                    def targetHost = 'ec2-54-234-80-60.compute-1.amazonaws.com'
+                    def targetHost = ''
                     if (env.BRANCH_NAME == 'dev') {
                         targetHost = '<DEV-EC2-IP>'
                     } else if (env.BRANCH_NAME == 'staging') {
@@ -80,7 +80,7 @@ pipeline {
                     // Use withCredentials to securely handle the SSH key
             withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')]){
                     sh 'chmod 600 ${SSH_KEY_FILE}'
-                    sh 'ssh -tt -i ${SSH_KEY_FILE} ubuntu@${targetHost} << EOF'
+                    sh 'ssh -tt -i ${SSH_KEY_FILE} ubuntu@54.234.80.60 << EOF'
                     sh """#!/bin/bash
                     docker pull ${ECR_REPO}:${TAG}
                     docker stop ${IMAGE_NAME} || true
