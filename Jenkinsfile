@@ -74,7 +74,7 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'staging') {
                         targetHost = '<STAGING-EC2-IP>'
                     } else if (env.BRANCH_NAME == 'main') {
-                        targetHost = '54.234.80.60'
+                        targetHost = '172-31-32-49'
                     }
                     echo "Target Host: ${targetHost}"
                     // Use withCredentials to securely handle the SSH key
