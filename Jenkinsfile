@@ -76,6 +76,7 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'main') {
                         targetHost = '54.234.80.60'
                     }
+                    echo "Target Host: ${targetHost}"
                     // Use withCredentials to securely handle the SSH key
             withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')]){
                     sh 'chmod 600 ${SSH_KEY_FILE}'
