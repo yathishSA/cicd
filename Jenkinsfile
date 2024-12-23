@@ -77,7 +77,7 @@ pipeline {
                         targetHost = '<PROD-EC2-IP>'
                     }
                     // Use withCredentials to securely handle the SSH key
-            withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')])
+            withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')]){
                     sh """
                     chmod 600 ${SSH_KEY_FILE}
                     ssh -i ${SSH_KEY_FILE} ec2-user@${targetHost} << EOF
@@ -87,6 +87,7 @@ pipeline {
                     docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
                     EOF
                     """
+            }
                 }
             }
         }
