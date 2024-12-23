@@ -80,7 +80,7 @@ pipeline {
                     // Use withCredentials to securely handle the SSH key
             withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY_FILE')]){
                     sh 'chmod 600 ${SSH_KEY_FILE}'
-                    sh 'ssh -tt -i ${SSH_KEY_FILE} root@${targetHost} << EOF'
+                    sh 'ssh -tt -i ${SSH_KEY_FILE} ubuntu@${targetHost} << EOF'
                     sh """#!/bin/bash
                     docker pull ${ECR_REPO}:${TAG}
                     docker stop ${IMAGE_NAME} || true
