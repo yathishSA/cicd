@@ -80,7 +80,7 @@ pipeline {
                     // Use withCredentials to securely handle the SSH key
             withCredentials([sshUserPrivateKey(credentialsId: 'pro_ssh_key', keyFileVariable: 'SSH_KEY_FILE')]){
                     sh 'chmod 600 $SSH_KEY_FILE'
-                    sh 'ssh -o StrictHostKeyChecking=no -tt -i $SSH_KEY_FILE ubuntu@3.81.82.20 << EOF'
+                    sh 'ssh -o StrictHostKeyChecking=no -tt -i $SSH_KEY_FILE root@54.208.90.215 << EOF'
                     sh ' echo "connection sussecfull" '
                     sh """#!/bin/bash
                     echo "Pulling Docker image..."
