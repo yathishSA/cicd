@@ -58,7 +58,7 @@ pipeline {
         stage('Container Security Scan - Trivy') {
             steps {
                 script {
-                    sh "trivy image ${ECR_REPO}:${TAG}"
+                    sh "trivy image 866934333672.dkr.ecr.us-east-1.amazonaws.com/jay-repo:main-9"
                 }
             }
         }
