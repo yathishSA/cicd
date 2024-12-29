@@ -55,6 +55,14 @@ pipeline {
                 }
             }
         }
+        stage('Container Security Scan - Trivy') {
+            steps {
+                script {
+                    sh "trivy image ${ECR_REPO}:${TAG}"
+                }
+            }
+        }
+
 
         stage('Static Code Analysis - SonarQube') {
             steps {
