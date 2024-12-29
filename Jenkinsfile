@@ -6,7 +6,7 @@ pipeline {
         
     }
 
-    environment {
+    environment { 
         ECR_REPO = '866934333672.dkr.ecr.us-east-1.amazonaws.com/jay-repo'
         IMAGE_NAME = 'app-image'
         TAG = "${env.BRANCH_NAME}-${env.BUILD_ID}"
