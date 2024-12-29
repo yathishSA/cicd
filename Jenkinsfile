@@ -58,6 +58,8 @@ pipeline {
         stage('Container Security Scan - Trivy') {
             steps {
                 script {
+                    sh 'aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 866934333672.dkr.ecr.us-east-1.amazonaws.com'
+                    sh 'sudo usermod -aG docker root'
                     sh "trivy image 866934333672.dkr.ecr.us-east-1.amazonaws.com/jay-repo:main-9"
                 }
             }
