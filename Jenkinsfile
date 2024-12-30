@@ -3,14 +3,12 @@ pipeline {
 
     tools { 
         maven 'maven3'
-        
     }
 
     environment {   
         ECR_REPO = '866934333672.dkr.ecr.us-east-1.amazonaws.com/jay-repo'
         IMAGE_NAME = 'app-image'
         TAG = "${env.BRANCH_NAME}-${env.BUILD_ID}"
-        
     }
 
     stages {
@@ -22,19 +20,18 @@ pipeline {
         
         stage('Build Application') {
             steps {
-            sh 'mvn clean package -Dmaven.test.skip=true'
+                sh 'mvn clean package -Dmaven.test.skip=true'
             }
         }
 
         stage('Build Docker Image') {
-    steps {
-        script {
-            // Specify the Dockerfile location using the -f option
-            docker.build("${env.ECR_REPO}:${env.TAG}", "-f docker/Dockerfile .")
+            steps {
+                script {
+                    // Specify the Dockerfile location using the -f option
+                    docker.build("${env.ECR_REPO}:${env.TAG}", "-f docker/Dockerfile .")
+                }
+            }
         }
-    }
-}
-
 
         stage('Push to ECR') {
             steps {
@@ -55,6 +52,7 @@ pipeline {
                 }
             }
         }
+
         stage('Container Security Scan - Trivy') {
             steps {
                 script {
@@ -65,7 +63,6 @@ pipeline {
             }
         }
 
-
         stage('Static Code Analysis - SonarQube') {
             steps {
                 script {
@@ -75,35 +72,38 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy to Environment') {
-    steps {
-        script {
-            // Check the branch name and set the appropriate target
-            def targetHost = ''
-            if (env.BRANCH_NAME == 'dev') {
-                targetHost = 'dev-server'  // Define the name or address for the dev server if needed
-            } else if (env.BRANCH_NAME == 'staging') {
-                targetHost = 'staging-server'  // Define the name or address for staging
-            } else if (env.BRANCH_NAME == 'main') {
-                targetHost = 'production-server'  // Define the production server address
+            steps {
+                script {
+                    // Check the branch name and set the appropriate target
+                    def targetHost = ''
+                    if (env.BRANCH_NAME == 'dev') {
+                        targetHost = 'dev-server'  // Define the name or address for the dev server if needed
+                    } else if (env.BRANCH_NAME == 'staging') {
+                        targetHost = 'staging-server'  // Define the name or address for staging
+                    } else if (env.BRANCH_NAME == 'main') {
+                        targetHost = 'production-server'  // Define the production server address
+                    }
+                    
+                    // Run deployment commands directly on the same agent (slave) server
+                    echo "Deploying to $targetHost"
+                    sh """
+                        echo "Pulling Docker image..."
+                        docker pull ${ECR_REPO}:${TAG}
+                        echo "Stopping existing container..."
+                        docker stop ${IMAGE_NAME} || true
+                        docker rm ${IMAGE_NAME} || true
+                        echo "Running new container..."
+                        docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
+                        echo "Deployment completed"
+                    """
+                }
             }
-            
-            // Run deployment commands directly on the same agent (slave) server
-            echo "Deploying to $targetHost"
-            sh '''
-                echo "Pulling Docker image..."
-                docker pull ${ECR_REPO}:${TAG}
-                echo "Stopping existing container..."
-                docker stop ${IMAGE_NAME} || true
-                docker rm ${IMAGE_NAME} || true
-                echo "Running new container..."
-                docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
-                echo "Deployment completed"
-            '''
         }
     }
-}
- post {
+
+    post {
         always {
             cleanWs()  // Clean up workspace after the build
         }
