@@ -75,36 +75,8 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Environment') {
-    steps {
-        script {
-            // Check the branch name and set the appropriate target
-            def targetHost = ''
-            if (env.BRANCH_NAME == 'dev') {
-                targetHost = 'dev-server'  // Define the name or address for the dev server if needed
-            } else if (env.BRANCH_NAME == 'staging') {
-                targetHost = 'staging-server'  // Define the name or address for staging
-            } else if (env.BRANCH_NAME == 'main') {
-                targetHost = 'production-server'  // Define the production server address
-            }
-            
-            // Run deployment commands directly on the same agent (slave) server
-            echo "Deploying to $targetHost"
-            sh '''
-                echo "Pulling Docker image..."
-                docker pull ${ECR_REPO}:${TAG}
-                echo "Stopping existing container..."
-                docker stop ${IMAGE_NAME} || true
-                docker rm ${IMAGE_NAME} || true
-                echo "Running new container..."
-                docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
-                echo "Deployment completed"
-            '''
-        }
-    }
-}
-
-    stage('Deploy to Environment') {
+        
+         stage('Deploy to Environment') {
             steps {
                 script {
                     def targetHost = ''
