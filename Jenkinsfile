@@ -75,42 +75,35 @@ pipeline {
                 }
             }
         }
-        
-         stage('Deploy to Environment') {
-            steps {
-                script {
-                    def targetHost = ''
-                    if (env.BRANCH_NAME == 'dev') {
-                        targetHost = '<DEV-EC2-IP>'
-                    } else if (env.BRANCH_NAME == 'staging') {
-                        targetHost = '<STAGING-EC2-IP>'
-                    } else if (env.BRANCH_NAME == 'main') {
-                        targetHost = '<targethost>'
-                    }
-                
-                    // Use withCredentials to securely handle the SSH key
-            withCredentials([sshUserPrivateKey(credentialsId: 'pro_ssh_key', keyFileVariable: 'SSH_KEY_FILE')]){
-                    sh 'chmod 600 $SSH_KEY_FILE'
-                    sh 'ssh -o StrictHostKeyChecking=no -tt -i $SSH_KEY_FILE root@98.83.70.146 << EOF'
-                    sh ' echo "connection sussecfull" '
-                    sh """#!/bin/bash
-                    echo "Pulling Docker image..."
-                    docker pull ${ECR_REPO}:${TAG}
-                    echo "Stopping existing container..."
-                    docker stop ${IMAGE_NAME} || true
-                    docker rm ${IMAGE_NAME} || true
-                    echo "Running new container..."
-                    docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
-                    echo "Deployment completed"
-EOF
-                    """
+        stage('Deploy to Environment') {
+    steps {
+        script {
+            // Check the branch name and set the appropriate target
+            def targetHost = ''
+            if (env.BRANCH_NAME == 'dev') {
+                targetHost = 'dev-server'  // Define the name or address for the dev server if needed
+            } else if (env.BRANCH_NAME == 'staging') {
+                targetHost = 'staging-server'  // Define the name or address for staging
+            } else if (env.BRANCH_NAME == 'main') {
+                targetHost = 'production-server'  // Define the production server address
             }
-                }
-            }
+            
+            // Run deployment commands directly on the same agent (slave) server
+            echo "Deploying to $targetHost"
+            sh '''
+                echo "Pulling Docker image..."
+                docker pull ${ECR_REPO}:${TAG}
+                echo "Stopping existing container..."
+                docker stop ${IMAGE_NAME} || true
+                docker rm ${IMAGE_NAME} || true
+                echo "Running new container..."
+                docker run -d --name ${IMAGE_NAME} -p 80:80 ${ECR_REPO}:${TAG}
+                echo "Deployment completed"
+            '''
         }
     }
-
-    post {
+}
+ post {
         always {
             cleanWs()  // Clean up workspace after the build
         }
