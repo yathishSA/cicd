@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: shopping-cart
-          image: yathish07/petclinic:tagnam # Image that will be used to containers in the cluster
+          image: yathish07/rep:sus # Image that will be used to containers in the cluster
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8070 # The port that the container is running on in the cluster
